@@ -21,6 +21,8 @@
 
 long LISTSIZE[100];
 
+int fetchCounts = 0;
+
 extern FILE *fpbtree, *fppost, *fptext;
 extern void print_and_reset_stats();
 extern int setparms(void);
@@ -34,7 +36,7 @@ extern int dbclose(void);
 extern void printKey(struct KeyRecord *p);
 extern void printOcc(struct KeyRecord *p);
 extern int get_predecessors(char *key, int k, char *result[]);
-extern int get_successors(char *key, int k, char *result[]);
+extern int get_successors(char *key, int k);
 extern char **create_string_array(size_t n);
 extern void sort_string_array(char **arr, size_t n);
 extern void free_string_array(char **arr, size_t n);
@@ -104,7 +106,7 @@ int main(int argc, char **argv) {
             scanf("%s", word);
             printf("k=?\n");
             scanf("%d", &k);
-            printf("IMPLEMENT  ME!\n");
+            get_successors(word, k);
             break;
         case '<':
             printf("word=?\n");
@@ -118,7 +120,8 @@ int main(int argc, char **argv) {
             PrintTreeInOrder(ROOT, 0);
             break;
         case '#':
-            printf("IMPLEMENT  ME!\n");
+            printf("# of reads on B-tree: %d\n", fetchCounts);
+            fetchCounts = 0;
             break;
         case 'x':
             printf("\n*** Exiting .........\n");

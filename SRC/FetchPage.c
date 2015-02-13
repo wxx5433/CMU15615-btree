@@ -53,6 +53,7 @@
 #include "def.h"
 
 extern FILE *fpbtree;
+extern int fetchCounts;
 
 struct PageHdr *FetchPage(PAGENO Page)
 /* Page number of page to be fetched */
@@ -63,6 +64,9 @@ struct PageHdr *FetchPage(PAGENO Page)
 
     int i;
     PAGENO FindNumPagesInTree(void);
+
+    // update fetch counts
+    ++fetchCounts;
 
     /* check validity of "Page" */
     if ((Page < 1) || (Page > FindNumPagesInTree())) {
