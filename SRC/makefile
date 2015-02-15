@@ -41,7 +41,7 @@ spotless: cleanup cleanupo
 	\rm -f main
 
 cleanupo:
-	\rm -f *.o
+	\rm -f *.o main
 
 clean: cleanupo
 

@@ -1,2 +1,2 @@
-*.o
-tags
+SRC/*.o
+SRC/tags

@@ -22,8 +22,6 @@ test: test_search test_sanity test_predecessors test_successors
 # make sure your output format is correct
 test_sanity: load
 	$(BIN) < Tests/test_sanity.inp > sanity.mysol
-	@echo -e "\033[0;31m" $@ makes sure you are using identical output format, \
-		 so pass me first"\033[0m"
 	diff sanity.mysol Tests/sanity.sol
 	@echo -e "\033[0;31m" $@ passed "\033[0m"
 
@@ -51,6 +49,7 @@ grade: load
 clean:
 	\rm -f $(BIN)
 	cd SRC; make clean
+	\rm -f *.mysol
 
 spotless: clean
 	\rm -f $(DATA)

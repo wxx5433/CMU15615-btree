@@ -43,7 +43,7 @@ int get_successors(char *key, int k) {
 
     // check parameters first
     if (k <= 0) {
-        printf("k should be positive not %d\n", k);
+        printf("k should be positive not %d", k);
         return -1;
     }
 
@@ -70,7 +70,7 @@ int get_successors(char *key, int k) {
     KeyListTraverser = findKey(PagePtr, key);
     // check if the key is not in the B-tree
     if (KeyListTraverser == NULL) {
-        printf("key: \"%s\" does not exist\n", key);
+        printf("key: \"%s\": not found\n", key);
         return -1;
     }
     char** result = (char**)calloc(k, sizeof(char*));
@@ -82,7 +82,8 @@ int get_successors(char *key, int k) {
     // remember to check if k execeed remaining key nums
     for (i = 0; i < k; ++i) {
         KeyListTraverser = KeyListTraverser->Next;
-        if (KeyListTraverser == NULL) {
+        if (KeyListTraverser == NULL) {  // end of this page
+            // try to fetch next leaf page
             PAGENO page = PagePtr->PgNumOfNxtLfPg;
             if (page < 1 || page > FindNumPagesInTree()) {
                 break;
@@ -92,8 +93,7 @@ int get_successors(char *key, int k) {
             FreePage(PagePtr);  // free space
             PagePtr = nextPagePtr;
         }
-        printf("%s\n", KeyListTraverser->StoredKey);
-        strncpy(result[i], KeyListTraverser->StoredKey, KeyListTraverser->KeyLen);
+        strcpy(result[i], KeyListTraverser->StoredKey);
     }
 
     // print out the result
@@ -101,14 +101,16 @@ int get_successors(char *key, int k) {
     int j;
     for (j = 0; j < i; ++j) {
         printf("%s\n", result[j]);
-        free(result[j]);
     }
-    free(result);
 
     // free space
     if (nextPagePtr != NULL) {
         free(nextPagePtr);
     }
+    for (j = 0; j < k; ++j) {
+        free(result[j]);
+    }
+    free(result);
 
     return 0;
 }
