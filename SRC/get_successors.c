@@ -38,13 +38,6 @@ struct KeyRecord* findKey(struct PageHdr* PagePtr, char *key) {
     }
 }
 
-struct PageHdr* getPage(PAGENO Page) {
-    if (Page < 1 || Page > FindNumPagesInTree()) {
-        return NULL;
-    }
-    return FetchPage(Page);
-}
-
 int get_successors(char *key, int k) {
     struct KeyRecord *KeyListTraverser;
 
@@ -90,14 +83,16 @@ int get_successors(char *key, int k) {
     for (i = 0; i < k; ++i) {
         KeyListTraverser = KeyListTraverser->Next;
         if (KeyListTraverser == NULL) {
-            nextPagePtr = getPage(PagePtr->PgNumOfNxtLfPg);
-            if (nextPagePtr == NULL) {  // no more page to read
+            PAGENO page = PagePtr->PgNumOfNxtLfPg;
+            if (page < 1 || page > FindNumPagesInTree()) {
                 break;
             }
+            nextPagePtr = FetchPage(PagePtr->PgNumOfNxtLfPg);
             KeyListTraverser = nextPagePtr->KeyListPtr;
-            free(PagePtr);  // free space
+            FreePage(PagePtr);  // free space
             PagePtr = nextPagePtr;
         }
+        printf("%s\n", KeyListTraverser->StoredKey);
         strncpy(result[i], KeyListTraverser->StoredKey, KeyListTraverser->KeyLen);
     }
 
@@ -108,12 +103,12 @@ int get_successors(char *key, int k) {
         printf("%s\n", result[j]);
         free(result[j]);
     }
+    free(result);
 
     // free space
     if (nextPagePtr != NULL) {
         free(nextPagePtr);
     }
-    free(result);
 
     return 0;
 }

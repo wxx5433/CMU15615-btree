@@ -19,6 +19,7 @@
 extern int PAGESIZE;	/* Size of page (in bytes) to be stored on disk  */
 extern int MAXTEXTPTRS;	/* POSTINGSFILE stores so many ptrs,
 			   then goes to overflow */
+extern int fetchCounts;
 
 #define MAXWORDSIZE (100) /* Maximum size of any key */
 #define ROOT (1)          /* The root is always stored as first page on disk */
@@ -86,3 +87,4 @@ struct upKey {
 	PAGENO		right;	/* right page, with keys > */
 	char *		key;
 };
+
