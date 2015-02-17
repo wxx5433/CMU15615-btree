@@ -175,7 +175,7 @@ void searchLeafPage(char** result, struct PageHdr* pagePtr, int offset, int* k) 
         newPagePtr = FetchPage(prevKeys[j]->PgNum);
         searchLeafPageHelper(newPagePtr, result, k, newPagePtr->KeyListPtr);
         FreePage(newPagePtr);  // do not forget to free it!
-        if (k == 0) {  // have found enough predecessors!
+        if (*k == 0) {  // have found enough predecessors!
             return;
         }
     }
@@ -246,7 +246,7 @@ int get_predecessors(char *key, int k) {
     char** result = (char**)calloc(k, sizeof(char*));
     int originalK = k;
     struct KeyRecord* keyPtr = pagePtr->KeyListPtr;
-    int resultStart;  // to record the actual start of result
+    int resultStart = 0;  // to record the actual start of result
     if (pos >= k) {  // easy case: in the same leaf page
         int diff = pos - k;
         int j;
@@ -260,7 +260,9 @@ int get_predecessors(char *key, int k) {
         k -= pos;
         PageRecord* curPageRecord = dummyNode->prev;
         // backtrace 
-        resultStart = findParentPage(dummyNode, curPageRecord, result, k);
+        if (k != 0) {
+            resultStart = findParentPage(dummyNode, curPageRecord, result, k);
+        }
     }
     
     // output result
