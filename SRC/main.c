@@ -20,7 +20,7 @@
  * postings records */
 
 long LISTSIZE[100];
-int fetchCounts = 0;
+extern int btReadCount;
 
 extern FILE *fpbtree, *fppost, *fptext;
 extern void print_and_reset_stats();
@@ -119,8 +119,8 @@ int main(int argc, char **argv) {
             PrintTreeInOrder(ROOT, 0);
             break;
         case '#':
-            printf("# of reads on B-tree: %d\n", fetchCounts);
-            fetchCounts = 0;
+            printf("# of reads on B-tree: %d\n", btReadCount);
+            btReadCount = 0;
             break;
         case 'x':
             printf("\n*** Exiting .........\n");

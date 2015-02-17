@@ -111,6 +111,8 @@ PAGENO getPageNum(PageRecord* pageRecord, PAGENO PageNo, char *key) {
  */
 void storeOnePageResult(struct KeyRecord* keyPtr, char** result, int k, int keyNum) {
     while (keyNum > 0) {
+        int index = k - keyNum;
+        result[index] = (char*)malloc((keyPtr->KeyLen + 1) * sizeof(char));
         strcpy(result[k - keyNum], keyPtr->StoredKey);
         keyPtr = keyPtr->Next;
         --keyNum;
@@ -235,18 +237,14 @@ int get_predecessors(char *key, int k) {
     int pos, found, count = 0;
     pos = FindInsertionPosition(pagePtr->KeyListPtr, key, 
             &found, pagePtr->NumKeys, count) - 1;
+    // if cannot find the key, we want to shift pos right by 1
     if (found != TRUE) {
-        printf("key: \"%s\": not found\n", key);
-        return -1;
+        pos += 1;
     }
 
     // malloc space to store results
     char** result = (char**)calloc(k, sizeof(char*));
     int originalK = k;
-    int i;
-    for (i = 0; i < k; ++i) {
-        result[i] = (char*)malloc(sizeof(char*));
-    }
     struct KeyRecord* keyPtr = pagePtr->KeyListPtr;
     int resultStart;  // to record the actual start of result
     if (pos >= k) {  // easy case: in the same leaf page
@@ -268,8 +266,10 @@ int get_predecessors(char *key, int k) {
     // output result
     printf("found %d predecessors:\n", originalK - resultStart);
     while (resultStart < originalK) {
-        printf("%s\n", result[resultStart++]);
+        printf("%s\n", result[resultStart]);
+        free(result[resultStart++]);  // free result
     }
+    free(result);
 
     // free all space now!! Yeah! We are done!
     FreePage(pagePtr);
@@ -282,10 +282,6 @@ int get_predecessors(char *key, int k) {
         pageRecordPtr = nextPageRecordPtr;
     }
     free(dummyNode);
-    for (i = 0; i < originalK; ++i) {
-        free(result[i]);
-    }
-    free(result);
 
     return 0;
 }

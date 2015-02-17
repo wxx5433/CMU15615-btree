@@ -30,12 +30,15 @@ struct KeyRecord* findKey(struct PageHdr* PagePtr, char *key) {
     for (i = 0; i < pos - 1; ++i) {
         KeyListTraverser = KeyListTraverser->Next;
     }
+    return KeyListTraverser;
 
+    /*
     if (found == TRUE) {
         return KeyListTraverser;
     } else {  // cannot find the key in the page
         return NULL;
     }
+    */
 }
 
 int get_successors(char *key, int k) {
@@ -68,16 +71,9 @@ int get_successors(char *key, int k) {
     struct PageHdr *PagePtr = FetchPage(page);
     // get the key pointer from the page
     KeyListTraverser = findKey(PagePtr, key);
-    // check if the key is not in the B-tree
-    if (KeyListTraverser == NULL) {
-        printf("key: \"%s\": not found\n", key);
-        return -1;
-    }
+
     char** result = (char**)calloc(k, sizeof(char*));
     int i;
-    for (i = 0; i < k; ++i) {
-        result[i] = (char*)calloc(MAXWORDSIZE, sizeof(char));
-    }
     struct PageHdr* nextPagePtr = NULL;
     // remember to check if k execeed remaining key nums
     for (i = 0; i < k; ++i) {
@@ -93,6 +89,7 @@ int get_successors(char *key, int k) {
             FreePage(PagePtr);  // free space
             PagePtr = nextPagePtr;
         }
+        result[i] = (char*)malloc((KeyListTraverser->KeyLen + 1) * sizeof(char));
         strcpy(result[i], KeyListTraverser->StoredKey);
     }
 
@@ -101,16 +98,14 @@ int get_successors(char *key, int k) {
     int j;
     for (j = 0; j < i; ++j) {
         printf("%s\n", result[j]);
+        free(result[j]);
     }
+    free(result);
 
     // free space
     if (nextPagePtr != NULL) {
         free(nextPagePtr);
     }
-    for (j = 0; j < k; ++j) {
-        free(result[j]);
-    }
-    free(result);
 
     return 0;
 }
